@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none">
+  <!-- Waterfall Pumps "W" pipe logo mark -->
+  <g stroke="#dc2626" stroke-width="12" stroke-linecap="round" fill="none">
+    <!-- Left vertical pipe down -->
+    <path d="M 40 10 L 40 60"/>
+    <!-- Left U curve -->
+    <path d="M 40 60 Q 40 110, 75 110 Q 100 110, 100 80"/>
+    <!-- Center dip -->
+    <path d="M 100 80 Q 100 110, 125 110 Q 160 110, 160 60"/>
+    <!-- Right vertical pipe up -->
+    <path d="M 160 60 L 160 10"/>
+    <!-- Right horizontal pipe -->
+    <path d="M 160 10 L 180 10"/>
+    <!-- Right pipe down -->
+    <path d="M 180 10 L 180 40"/>
+    <!-- Inner left pipe -->
+    <path d="M 55 10 L 55 55 Q 55 95, 80 95 Q 100 95, 100 70"/>
+    <!-- Inner right pipe -->
+    <path d="M 100 70 Q 100 95, 120 95 Q 145 95, 145 55 L 145 10"/>
+    <!-- Top bar left -->
+    <path d="M 35 10 L 60 10"/>
+    <!-- Top bar right -->
+    <path d="M 140 10 L 185 10"/>
+  </g>
+  <!-- TM mark -->
+  <text x="185" y="30" font-size="12" font-weight="700" fill="#dc2626" font-family="Arial, sans-serif">TM</text>
+</svg>
