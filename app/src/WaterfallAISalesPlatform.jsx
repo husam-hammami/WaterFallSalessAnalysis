@@ -469,13 +469,9 @@ export default function WaterfallAISalesPlatform() {
               <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>1,498 orders · 164 customers · 33 countries · 2020–2026</div>
             </div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ fontSize: 11, color: "#475569" }}>Designed & Created by <a href="https://www.linkedin.com/in/husam-hammami/" target="_blank" rel="noopener noreferrer" style={{ color: "#94a3b8", fontWeight: 600, textDecoration: "none" }}>Husam Hammami</a></span>
-            <div style={{ width: 1, height: 14, background: "#334155" }} />
-            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e" }} />
-              <span style={{ fontSize: 11, color: "#64748b" }}>Live</span>
-            </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e" }} />
+            <span style={{ fontSize: 11, color: "#64748b" }}>Live</span>
           </div>
         </div>
 
@@ -1097,7 +1093,7 @@ export default function WaterfallAISalesPlatform() {
 
       {/* Footer */}
       <div style={{ background: "#0f172a", color: "#94a3b8", padding: "16px 32px", textAlign: "center", fontSize: 12, letterSpacing: "0.5px" }}>
-        Waterfall Pumps AI Sales Intelligence Platform · Designed & Created by <a href="https://www.linkedin.com/in/husam-hammami/" target="_blank" rel="noopener noreferrer" style={{ color: "#38bdf8", fontWeight: 600, textDecoration: "none" }}>Husam Hammami</a>
+        Waterfall Pumps AI Sales Intelligence Platform · Built by <a href="https://www.linkedin.com/in/husam-hammami/" target="_blank" rel="noopener noreferrer" style={{ color: "#38bdf8", fontWeight: 600, textDecoration: "none" }}>Husam Hammami</a>
       </div>
 
       {/* Flow AI Chat */}
