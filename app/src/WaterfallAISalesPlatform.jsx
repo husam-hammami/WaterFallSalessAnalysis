@@ -1,8 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, AreaChart, Area, Treemap } from "recharts";
+import FlowChat, { FlowPage } from "./FlowChat";
 
-// ==================== DATA ====================
-const yearlyData = [
+// ==================== INITIAL DATA ====================
+const initialYearlyData = [
   { year: "2020", revenue: 22092317, orders: 200, avgOrder: 110462 },
   { year: "2021", revenue: 18899510, orders: 197, avgOrder: 95936 },
   { year: "2022", revenue: 26128963, orders: 248, avgOrder: 105360 },
@@ -12,7 +13,7 @@ const yearlyData = [
   { year: "2026*", revenue: 7146106, orders: 48, avgOrder: 148877 },
 ];
 
-const countryData = [
+const initialCountryData = [
   { name: "UAE", revenue: 61041864, orders: 608, pct: 34.8 },
   { name: "Saudi Arabia", revenue: 54097950, orders: 420, pct: 30.9 },
   { name: "Colombia", revenue: 19418528, orders: 171, pct: 11.1 },
@@ -25,7 +26,7 @@ const countryData = [
   { name: "Others", revenue: 5363401, orders: 53, pct: 3.1 },
 ];
 
-const productData = [
+const initialProductData = [
   { name: "Horizontal Split Case", revenue: 103223047, orders: 564, pct: 58.9, color: "#2563eb" },
   { name: "End Suction", revenue: 44236859, orders: 582, pct: 25.2, color: "#7c3aed" },
   { name: "Vertical Turbine", revenue: 21046444, orders: 115, pct: 12.0, color: "#0891b2" },
@@ -34,7 +35,7 @@ const productData = [
   { name: "Accessories", revenue: 195663, orders: 28, pct: 0.1, color: "#dc2626" },
 ];
 
-const capacityData = [
+const initialCapacityData = [
   { range: "≤500 GPM", revenue: 34860369, orders: 491, avgPrice: 70998 },
   { range: "501-1000", revenue: 61195161, orders: 449, avgPrice: 136292 },
   { range: "1001-1500", revenue: 32762775, orders: 186, avgPrice: 176144 },
@@ -42,7 +43,7 @@ const capacityData = [
   { range: "2001+", revenue: 21870890, orders: 68, avgPrice: 321631 },
 ];
 
-const topCustomers = [
+const initialTopCustomers = [
   { name: "MODERN PUMPS CO.", revenue: 27522375, orders: 229, country: "KSA" },
   { name: "ARABIAN PUMPS", revenue: 24807643, orders: 187, country: "KSA" },
   { name: "SKYFIRE PROTECTION", revenue: 19618623, orders: 178, country: "Colombia" },
@@ -116,7 +117,7 @@ const swotData = {
   ],
 };
 
-const aiInsights = [
+const initialAiInsights = [
   {
     id: 1,
     category: "Revenue Alert",
@@ -401,6 +402,29 @@ export default function WaterfallAISalesPlatform() {
   const [expandedSwot, setExpandedSwot] = useState(new Set());
   const [insightFilter, setInsightFilter] = useState("all");
 
+  // Mutable dashboard data (AI can update these)
+  const [yearlyData, setYearlyData] = useState(initialYearlyData);
+  const [countryData, setCountryData] = useState(initialCountryData);
+  const [productData, setProductData] = useState(initialProductData);
+  const [capacityData, setCapacityData] = useState(initialCapacityData);
+  const [topCustomers, setTopCustomers] = useState(initialTopCustomers);
+  const [aiInsights, setAiInsights] = useState(initialAiInsights);
+
+  // Data bundle for Flow AI
+  const dashboardData = useMemo(() => ({
+    yearlyData, countryData, productData, capacityData, topCustomers, aiInsights,
+    ksaProjects, swotData, marketData,
+  }), [yearlyData, countryData, productData, capacityData, topCustomers, aiInsights]);
+
+  const handleDataUpdate = useCallback((updates) => {
+    if (updates.yearlyData) setYearlyData(updates.yearlyData);
+    if (updates.countryData) setCountryData(updates.countryData);
+    if (updates.productData) setProductData(updates.productData);
+    if (updates.capacityData) setCapacityData(updates.capacityData);
+    if (updates.topCustomers) setTopCustomers(updates.topCustomers);
+    if (updates.aiInsights) setAiInsights(updates.aiInsights);
+  }, []);
+
   const toggleSwotItem = (key) => {
     setExpandedSwot(prev => {
       const next = new Set(prev);
@@ -418,13 +442,20 @@ export default function WaterfallAISalesPlatform() {
     { id: "insights", label: "AI Insights" },
     { id: "market", label: "Market Intel" },
     { id: "swot", label: "SWOT" },
+    { id: "flow", label: "Flow AI" },
   ];
 
-  const totalRevenue = 175315933;
-  const ksaRevenue = 54097950;
+  const totalRevenue = useMemo(() => yearlyData.reduce((s, y) => s + y.revenue, 0), [yearlyData]);
+  const ksaEntry = useMemo(() => countryData.find(c => c.name === "Saudi Arabia"), [countryData]);
+  const ksaRevenue = ksaEntry?.revenue || 0;
   const ksaPct = ((ksaRevenue / totalRevenue) * 100).toFixed(1);
-  const yoyGrowth = (((34491125 - 33999634) / 33999634) * 100).toFixed(1);
-  const cagr2020_2025 = ((Math.pow(34491125 / 22092317, 1 / 5) - 1) * 100).toFixed(1);
+  const latestYear = yearlyData.length >= 2 ? yearlyData[yearlyData.length - 2] : null;
+  const prevYear = yearlyData.length >= 3 ? yearlyData[yearlyData.length - 3] : null;
+  const yoyGrowth = latestYear && prevYear ? (((latestYear.revenue - prevYear.revenue) / prevYear.revenue) * 100).toFixed(1) : "0";
+  const firstFull = yearlyData[0];
+  const lastFull = yearlyData.length >= 2 ? yearlyData[yearlyData.length - 2] : yearlyData[0];
+  const yearsSpan = yearlyData.length >= 2 ? yearlyData.length - 2 : 1;
+  const cagr2020_2025 = firstFull && lastFull ? ((Math.pow(lastFull.revenue / firstFull.revenue, 1 / yearsSpan) - 1) * 100).toFixed(1) : "0";
 
   return (
     <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", background: "#f8fafc", minHeight: "100vh" }}>
@@ -438,9 +469,13 @@ export default function WaterfallAISalesPlatform() {
               <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>1,498 orders · 164 customers · 33 countries · 2020–2026</div>
             </div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e" }} />
-            <span style={{ fontSize: 11, color: "#64748b" }}>Live · Rev 3</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <span style={{ fontSize: 11, color: "#475569" }}>Designed & Created by <a href="https://www.linkedin.com/in/husam-hammami/" target="_blank" rel="noopener noreferrer" style={{ color: "#94a3b8", fontWeight: 600, textDecoration: "none" }}>Husam Hammami</a></span>
+            <div style={{ width: 1, height: 14, background: "#334155" }} />
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e" }} />
+              <span style={{ fontSize: 11, color: "#64748b" }}>Live</span>
+            </div>
           </div>
         </div>
 
@@ -1053,12 +1088,20 @@ export default function WaterfallAISalesPlatform() {
             </div>
           </div>
         )}
+
+        {/* ========== FLOW AI TAB ========== */}
+        {activeTab === "flow" && (
+          <FlowPage dashboardData={dashboardData} onDataUpdate={handleDataUpdate} />
+        )}
       </div>
 
       {/* Footer */}
-      <div style={{ background: "#0f172a", color: "#64748b", padding: "16px 32px", textAlign: "center", fontSize: 11 }}>
-        Waterfall Pumps AI Sales Intelligence Platform · Data source: Sales Report KSA 2025 Rev 3 · 1,498 orders · 164 customers · 33 countries · Market data from Grand View Research, IMARC, Allied Market Research, Astute Analytica
+      <div style={{ background: "#0f172a", color: "#94a3b8", padding: "16px 32px", textAlign: "center", fontSize: 12, letterSpacing: "0.5px" }}>
+        Waterfall Pumps AI Sales Intelligence Platform · Designed & Created by <a href="https://www.linkedin.com/in/husam-hammami/" target="_blank" rel="noopener noreferrer" style={{ color: "#38bdf8", fontWeight: 600, textDecoration: "none" }}>Husam Hammami</a>
       </div>
+
+      {/* Flow AI Chat */}
+      <FlowChat dashboardData={dashboardData} onDataUpdate={handleDataUpdate} />
     </div>
   );
 }
