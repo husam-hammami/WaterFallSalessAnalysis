@@ -121,7 +121,6 @@ const aiInsights = [
     id: 1,
     category: "Revenue Alert",
     priority: "critical",
-    icon: "📈",
     title: "KSA Revenue Concentration Risk",
     insight: "96% of KSA revenue comes from just 2 distributors: Modern Pumps (AED 27.5M) and Arabian Pumps (AED 24.8M). If either relationship deteriorates, half the KSA business is at risk.",
     action: "Diversify by onboarding 2-3 additional KSA distributors in 2026. Target: reduce top-2 dependency to below 75% by end of 2027.",
@@ -131,7 +130,6 @@ const aiInsights = [
     id: 2,
     category: "Growth Opportunity",
     priority: "high",
-    icon: "🚀",
     title: "KSA Should Be #1 Market, Not #2",
     insight: "UAE leads with AED 61M vs KSA at AED 54M. Yet KSA's construction market is 4x larger and Vision 2030 is driving $1.1T in projects. KSA is severely underperforming relative to market potential.",
     action: "Set a goal to surpass UAE revenue in KSA within 18 months. Open a local KSA stock warehouse, add 1 technical sales engineer on the ground.",
@@ -141,7 +139,6 @@ const aiInsights = [
     id: 3,
     category: "Product Strategy",
     priority: "high",
-    icon: "🔧",
     title: "Horizontal Split Case Dominates — But VT is Underserved",
     insight: "HSC generates 59% of revenue (AED 103M) across 564 orders. VT only accounts for 12% (AED 21M) but is the fastest growing segment for high-rise and mega-project applications in KSA.",
     action: "Invest in VT product line expansion, especially high-pressure models (>15 Bar) for high-rise projects like NEOM towers and Riyadh skyscrapers.",
@@ -151,7 +148,6 @@ const aiInsights = [
     id: 4,
     category: "Market Intelligence",
     priority: "medium",
-    icon: "🌍",
     title: "Colombia: Hidden Growth Engine",
     insight: "Colombia is the 3rd largest market (AED 19.4M, 11.1%) through a single distributor (Skyfire). This suggests untapped Latin American potential.",
     action: "Replicate the Skyfire model in Mexico, Brazil, and Chile. Brazil already shows AED 1.7M — significant room to grow with a dedicated distributor.",
@@ -161,7 +157,6 @@ const aiInsights = [
     id: 5,
     category: "Pricing Intelligence",
     priority: "high",
-    icon: "💰",
     title: "Average Order Value Trending Up — Protect the Margin",
     insight: "AOV has grown from AED 110K (2020) to AED 149K (2026 pace), a 35% increase. This signals successful upselling of complete packages (E+D+J) vs. individual components.",
     action: "Formalize the full-package strategy: incentivize distributors to sell E+D+J packages instead of standalone pumps. Create tiered pricing that makes packages 10-15% more attractive than à la carte.",
@@ -171,7 +166,6 @@ const aiInsights = [
     id: 6,
     category: "Mega Projects",
     priority: "critical",
-    icon: "🏗️",
     title: "Mega-Project Pipeline — Act Now or Miss the Window",
     insight: "Red Sea, Qiddiya, NEOM are already active (AED 1.5M+ secured). But the real wave is coming: $500B+ in projects entering MEP phase 2026-2028. Current coverage is minimal.",
     action: "Establish a dedicated Mega-Projects Task Force. Pre-qualify with Tier-1 EPC contractors (Samsung C&T, Bechtel, Fluor). Stock high-demand SKUs (1000-2000 GPM HS sets) locally.",
@@ -181,7 +175,6 @@ const aiInsights = [
     id: 7,
     category: "Operational",
     priority: "medium",
-    icon: "📦",
     title: "Invoice Gap: AED 15.8M Pending",
     insight: "AED 15.8M in orders are in 'To Invoice' status — representing potential cash flow delays and delivery backlogs. 88 orders awaiting invoicing.",
     action: "Implement weekly billing reconciliation. Flag orders >30 days in 'To Invoice' status for expedited processing.",
@@ -191,7 +184,6 @@ const aiInsights = [
     id: 8,
     category: "Competitive",
     priority: "high",
-    icon: "⚔️",
     title: "UL/FM Certification Is Your Moat — Defend It",
     insight: "KSA Civil Defense increasingly mandates UL/FM certification for fire pumps. This is Waterfall's strongest competitive advantage against Chinese manufacturers who typically lack these certifications.",
     action: "Create marketing materials highlighting UL/FM compliance. Run technical seminars with KSA Civil Defense departments. Position Waterfall as the compliance-safe choice.",
@@ -229,52 +221,122 @@ const KPICard = ({ title, value, subtitle, trend }) => (
   </div>
 );
 
-const InsightCard = ({ insight }) => {
+const InsightCard = ({ insight, index }) => {
   const [expanded, setExpanded] = useState(false);
   const priorityConfig = {
-    critical: { color: "#dc2626", border: "#fecaca", bg: "#fef2f2", label: "Critical" },
-    high: { color: "#b45309", border: "#fde68a", bg: "#fffbeb", label: "High" },
-    medium: { color: "#1d4ed8", border: "#bfdbfe", bg: "#eff6ff", label: "Medium" },
+    critical: { color: "#dc2626", bg: "#fef2f2", label: "Critical", dot: "#ef4444" },
+    high: { color: "#c2410c", bg: "#fff7ed", label: "High", dot: "#f97316" },
+    medium: { color: "#1e40af", bg: "#eff6ff", label: "Medium", dot: "#3b82f6" },
   };
   const config = priorityConfig[insight.priority];
+  const categoryIcons = {
+    "Revenue Alert": (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={config.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+    ),
+    "Growth Opportunity": (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={config.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
+      </svg>
+    ),
+    "Product Strategy": (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={config.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+      </svg>
+    ),
+    "Market Intelligence": (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={config.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+      </svg>
+    ),
+    "Pricing Intelligence": (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={config.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+      </svg>
+    ),
+    "Mega Projects": (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={config.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="1" y="6" width="22" height="16" rx="2"/><path d="M1 10h22"/><path d="M8 6V2"/><path d="M16 6V2"/>
+      </svg>
+    ),
+    "Operational": (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={config.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+      </svg>
+    ),
+    "Competitive": (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={config.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+    ),
+  };
 
   return (
     <div
       onClick={() => setExpanded(!expanded)}
       style={{
         background: "white",
-        borderRadius: 8,
+        borderRadius: 12,
         overflow: "hidden",
         cursor: "pointer",
-        transition: "box-shadow 0.2s",
-        boxShadow: expanded ? "0 2px 12px rgba(0,0,0,0.08)" : "0 1px 2px rgba(0,0,0,0.04)",
-        border: "1px solid #e5e7eb",
-        borderLeft: `3px solid ${config.color}`,
+        transition: "all 0.25s ease",
+        boxShadow: expanded ? "0 8px 30px rgba(0,0,0,0.1)" : "0 1px 4px rgba(0,0,0,0.06)",
+        borderTop: `3px solid ${config.color}`,
+        borderRight: "1px solid #e5e7eb",
+        borderBottom: "1px solid #e5e7eb",
+        borderLeft: "1px solid #e5e7eb",
+        display: "flex",
+        flexDirection: "column",
+        position: expanded ? "relative" : "static",
+        zIndex: expanded ? 10 : 1,
       }}
     >
-      <div style={{ padding: "14px 18px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: config.color, textTransform: "uppercase", letterSpacing: 0.5 }}>{insight.category}</span>
-            <span style={{ width: 4, height: 4, borderRadius: "50%", background: "#d1d5db" }} />
-            <span style={{ fontSize: 11, fontWeight: 600, color: config.color }}>{config.label}</span>
+      {/* Card header */}
+      <div style={{ padding: "18px 20px 14px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ opacity: 0.8 }}>{categoryIcons[insight.category] || null}</div>
+            <span style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", textTransform: "uppercase", letterSpacing: 0.5 }}>{insight.category}</span>
           </div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "#111827", lineHeight: 1.4 }}>{insight.title}</div>
+          <div style={{
+            padding: "2px 8px", borderRadius: 4,
+            background: config.bg,
+            fontSize: 10, fontWeight: 700, color: config.color,
+            letterSpacing: 0.5, textTransform: "uppercase",
+          }}>
+            {config.label}
+          </div>
         </div>
-        <svg width="16" height="16" viewBox="0 0 16 16" style={{ flexShrink: 0, marginLeft: 12, transition: "transform 0.2s", transform: expanded ? "rotate(180deg)" : "none" }}>
-          <path d="M4 6l4 4 4-4" stroke="#9ca3af" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-        </svg>
+        <div style={{ fontSize: 14, fontWeight: 700, color: "#111827", lineHeight: 1.45, marginBottom: 8 }}>{insight.title}</div>
+        <div style={{ fontSize: 12, color: "#6b7280", lineHeight: 1.6, display: "-webkit-box", WebkitLineClamp: expanded ? "none" : 2, WebkitBoxOrient: "vertical", overflow: expanded ? "visible" : "hidden" }}>
+          {insight.insight}
+        </div>
       </div>
 
+      {/* Card footer — always visible */}
+      <div style={{ marginTop: "auto", padding: "12px 20px", background: "#f9fafb", borderTop: "1px solid #f3f4f6", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div>
+          <div style={{ fontSize: 10, color: "#9ca3af", fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5 }}>{insight.impact.split(": ")[0]}</div>
+          <div style={{ fontSize: 15, fontWeight: 800, color: config.color, marginTop: 1 }}>{insight.impact.split(": ")[1] || insight.impact}</div>
+        </div>
+        <div style={{
+          width: 28, height: 28, borderRadius: "50%", background: expanded ? config.color : "#e5e7eb",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          transition: "all 0.2s ease",
+        }}>
+          <svg width="12" height="12" viewBox="0 0 16 16" style={{ transition: "transform 0.2s", transform: expanded ? "rotate(180deg)" : "none" }}>
+            <path d="M4 6l4 4 4-4" stroke={expanded ? "white" : "#6b7280"} strokeWidth="2" fill="none" strokeLinecap="round" />
+          </svg>
+        </div>
+      </div>
+
+      {/* Expanded detail */}
       {expanded && (
-        <div style={{ padding: "0 18px 18px", borderTop: "1px solid #f3f4f6" }}>
-          <div style={{ paddingTop: 14 }}>
-            <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.7, marginBottom: 14 }}>{insight.insight}</div>
-            <div style={{ background: "#f9fafb", borderRadius: 6, padding: "12px 14px", marginBottom: 12, border: "1px solid #e5e7eb" }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: "#374151", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 }}>Recommended Action</div>
-              <div style={{ fontSize: 13, color: "#111827", lineHeight: 1.6 }}>{insight.action}</div>
-            </div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: config.color }}>Impact: {insight.impact}</div>
+        <div style={{ padding: "16px 20px 20px", background: "#fafbfc", borderTop: "1px solid #e5e7eb" }}>
+          <div style={{ background: "white", borderRadius: 8, padding: "14px 16px", marginBottom: 10, borderLeft: "3px solid #059669" }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: "#059669", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 }}>Recommended Action</div>
+            <div style={{ fontSize: 12, color: "#111827", lineHeight: 1.7 }}>{insight.action}</div>
           </div>
         </div>
       )}
@@ -337,6 +399,7 @@ export default function WaterfallAISalesPlatform() {
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedYear, setSelectedYear] = useState("all");
   const [expandedSwot, setExpandedSwot] = useState(new Set());
+  const [insightFilter, setInsightFilter] = useState("all");
 
   const toggleSwotItem = (key) => {
     setExpandedSwot(prev => {
@@ -710,60 +773,138 @@ export default function WaterfallAISalesPlatform() {
         )}
 
         {/* ========== AI INSIGHTS TAB ========== */}
-        {activeTab === "insights" && (
-          <div>
-            {/* Header */}
-            <div style={{ marginBottom: 24, display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
-              <div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: "#111827", marginBottom: 4 }}>Strategic Insights</div>
-                <div style={{ fontSize: 13, color: "#6b7280" }}>8 data-driven recommendations. Click any card to expand.</div>
-              </div>
-              <div style={{ display: "flex", gap: 16 }}>
-                {[
-                  { label: "Critical", count: aiInsights.filter(i => i.priority === "critical").length, color: "#dc2626" },
-                  { label: "High", count: aiInsights.filter(i => i.priority === "high").length, color: "#b45309" },
-                  { label: "Medium", count: aiInsights.filter(i => i.priority === "medium").length, color: "#1d4ed8" },
-                ].map((s, i) => (
-                  <span key={i} style={{ fontSize: 12, color: "#6b7280" }}>{s.label}: <strong style={{ color: s.color }}>{s.count}</strong></span>
-                ))}
-              </div>
-            </div>
+        {activeTab === "insights" && (() => {
+          const filteredInsights = insightFilter === "all" ? aiInsights : aiInsights.filter(i => i.priority === insightFilter);
+          const critCount = aiInsights.filter(i => i.priority === "critical").length;
+          const highCount = aiInsights.filter(i => i.priority === "high").length;
+          const medCount = aiInsights.filter(i => i.priority === "medium").length;
 
-            {/* All insights in a single-column flow */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 28 }}>
-              {aiInsights.map((i, idx) => <InsightCard key={i.id} insight={i} index={idx} />)}
-            </div>
+          const opportunityData = [
+            { label: "Mega-Projects Pipeline", value: "AED 50-80M", pct: 52, color: "#dc2626" },
+            { label: "KSA Market Expansion", value: "AED 30-40M", pct: 28, color: "#2563eb" },
+            { label: "Cash Flow Acceleration", value: "AED 15.8M", pct: 13, color: "#059669" },
+            { label: "LATAM Expansion", value: "AED 10-15M", pct: 10, color: "#7c3aed" },
+            { label: "VT Product Growth", value: "AED 8-12M", pct: 8, color: "#0891b2" },
+            { label: "Margin Improvement", value: "5-8% GP", pct: 6, color: "#d97706" },
+          ];
 
-            {/* Revenue Opportunity Summary */}
-            <div style={{ background: "white", borderRadius: 8, boxShadow: "0 1px 2px rgba(0,0,0,0.04)", border: "1px solid #e5e7eb" }}>
-              <div style={{ padding: "16px 20px", borderBottom: "1px solid #e5e7eb", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{ fontSize: 15, fontWeight: 700, color: "#111827" }}>Total Addressable Opportunity</div>
-                <span style={{ fontSize: 11, color: "#6b7280" }}>3-Year Horizon</span>
+          return (
+            <div>
+              {/* Header with summary stats */}
+              <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
+                <div style={{ flex: 1, background: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid #e5e7eb", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Strategic Recommendations</div>
+                  <div style={{ fontSize: 28, fontWeight: 800, color: "#111827", marginBottom: 4 }}>{aiInsights.length}</div>
+                  <div style={{ fontSize: 12, color: "#9ca3af" }}>Data-driven insights from AED 175M+ in sales data</div>
+                </div>
+                <div style={{ flex: 1, background: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid #e5e7eb", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Revenue at Risk</div>
+                  <div style={{ fontSize: 28, fontWeight: 800, color: "#dc2626", marginBottom: 4 }}>AED 26M+</div>
+                  <div style={{ fontSize: 12, color: "#9ca3af" }}>From distributor concentration in KSA</div>
+                </div>
+                <div style={{ flex: 1, background: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid #e5e7eb", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Addressable Opportunity</div>
+                  <div style={{ fontSize: 28, fontWeight: 800, color: "#059669", marginBottom: 4 }}>AED 100-150M+</div>
+                  <div style={{ fontSize: 12, color: "#9ca3af" }}>3-year revenue potential across all initiatives</div>
+                </div>
               </div>
-              <div style={{ padding: "12px 20px 20px" }}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+
+              {/* Filter bar */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+                <div style={{ display: "flex", gap: 6 }}>
                   {[
-                    { label: "KSA Market Expansion", value: "AED 30-40M" },
-                    { label: "Mega-Projects Pipeline", value: "AED 50-80M" },
-                    { label: "VT Product Growth", value: "AED 8-12M" },
-                    { label: "LATAM Expansion", value: "AED 10-15M" },
-                    { label: "Margin Improvement", value: "5-8% GP uplift" },
-                    { label: "Cash Flow Acceleration", value: "AED 15.8M" },
-                  ].map((item, i) => (
-                    <div key={i} style={{ background: "#f9fafb", borderRadius: 6, padding: "12px 14px", border: "1px solid #e5e7eb" }}>
-                      <div style={{ fontSize: 11, color: "#6b7280", fontWeight: 500, marginBottom: 4 }}>{item.label}</div>
-                      <div style={{ fontSize: 15, fontWeight: 700, color: "#111827" }}>{item.value}</div>
-                    </div>
+                    { id: "all", label: "All", count: aiInsights.length },
+                    { id: "critical", label: "Critical", count: critCount, color: "#dc2626" },
+                    { id: "high", label: "High", count: highCount, color: "#c2410c" },
+                    { id: "medium", label: "Medium", count: medCount, color: "#1e40af" },
+                  ].map(f => (
+                    <button
+                      key={f.id}
+                      onClick={() => setInsightFilter(f.id)}
+                      style={{
+                        padding: "6px 14px", borderRadius: 6, border: "1px solid",
+                        borderColor: insightFilter === f.id ? (f.color || "#111827") : "#e5e7eb",
+                        background: insightFilter === f.id ? (f.color ? `${f.color}08` : "#f9fafb") : "white",
+                        color: insightFilter === f.id ? (f.color || "#111827") : "#6b7280",
+                        fontSize: 12, fontWeight: 600, cursor: "pointer",
+                        transition: "all 0.15s ease",
+                        display: "flex", alignItems: "center", gap: 6,
+                      }}
+                    >
+                      {f.label}
+                      <span style={{
+                        background: insightFilter === f.id ? (f.color || "#111827") : "#e5e7eb",
+                        color: insightFilter === f.id ? "white" : "#6b7280",
+                        fontSize: 10, fontWeight: 700, padding: "1px 6px", borderRadius: 10,
+                      }}>{f.count}</span>
+                    </button>
                   ))}
                 </div>
-                <div style={{ marginTop: 14, background: "#0f172a", borderRadius: 6, padding: "12px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: "#94a3b8" }}>Combined Revenue Potential</span>
-                  <span style={{ fontSize: 18, fontWeight: 700, color: "white" }}>AED 100-150M+</span>
+                <div style={{ fontSize: 12, color: "#9ca3af" }}>Click any row to expand details</div>
+              </div>
+
+              {/* Insight cards — 2-column grid */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 28 }}>
+                {filteredInsights.map((i, idx) => <InsightCard key={i.id} insight={i} index={aiInsights.indexOf(i)} />)}
+              </div>
+
+              {/* Opportunity Breakdown — two columns */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                {/* Left: Bar breakdown */}
+                <div style={{ background: "white", borderRadius: 10, border: "1px solid #e5e7eb", boxShadow: "0 1px 3px rgba(0,0,0,0.04)", overflow: "hidden" }}>
+                  <div style={{ padding: "16px 20px", borderBottom: "1px solid #f3f4f6" }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#111827" }}>Opportunity Breakdown</div>
+                    <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>3-year revenue potential by initiative</div>
+                  </div>
+                  <div style={{ padding: "16px 20px" }}>
+                    {opportunityData.map((item, i) => (
+                      <div key={i} style={{ marginBottom: i < opportunityData.length - 1 ? 14 : 0 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
+                          <span style={{ fontSize: 12, color: "#374151", fontWeight: 500 }}>{item.label}</span>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: "#111827" }}>{item.value}</span>
+                        </div>
+                        <div style={{ height: 6, background: "#f3f4f6", borderRadius: 3, overflow: "hidden" }}>
+                          <div style={{ height: "100%", width: `${item.pct}%`, background: item.color, borderRadius: 3, transition: "width 0.5s ease" }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Right: Priority matrix */}
+                <div style={{ background: "white", borderRadius: 10, border: "1px solid #e5e7eb", boxShadow: "0 1px 3px rgba(0,0,0,0.04)", overflow: "hidden" }}>
+                  <div style={{ padding: "16px 20px", borderBottom: "1px solid #f3f4f6" }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#111827" }}>Priority Distribution</div>
+                    <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>Insights by urgency level</div>
+                  </div>
+                  <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: 16 }}>
+                    {[
+                      { label: "Critical", count: critCount, color: "#dc2626", bg: "#fef2f2", desc: "Immediate action required" },
+                      { label: "High Priority", count: highCount, color: "#c2410c", bg: "#fff7ed", desc: "Action within 30 days" },
+                      { label: "Medium Priority", count: medCount, color: "#1e40af", bg: "#eff6ff", desc: "Strategic planning horizon" },
+                    ].map((p, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                        <div style={{
+                          width: 48, height: 48, borderRadius: 10, background: p.bg,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 20, fontWeight: 800, color: p.color, flexShrink: 0,
+                        }}>{p.count}</div>
+                        <div>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>{p.label}</div>
+                          <div style={{ fontSize: 11, color: "#9ca3af" }}>{p.desc}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ margin: "0 20px 20px", background: "#0f172a", borderRadius: 8, padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 12, fontWeight: 500, color: "#94a3b8" }}>Combined Revenue Potential</span>
+                    <span style={{ fontSize: 18, fontWeight: 800, color: "white" }}>AED 100-150M+</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* ========== MARKET INTEL TAB ========== */}
         {activeTab === "market" && (
