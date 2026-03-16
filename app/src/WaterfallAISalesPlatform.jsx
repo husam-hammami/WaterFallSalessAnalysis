@@ -1303,6 +1303,20 @@ export default function WaterfallAISalesPlatform() {
                   <BulletItem>Each item backed by evidence with confidence scoring</BulletItem>
                   <BulletItem>Linked strategic recommendations with projected impact values</BulletItem>
                 </CollapsibleSection>
+
+                <CollapsibleSection
+                  icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>}
+                  title="Deal Intelligence Notes"
+                  subtitle="Sales team annotations on every deal — feeding AI analysis and forecasting"
+                  accentColor="#0891b2"
+                >
+                  <BulletItem>Comment section on every deal/order — sales reps document how the deal was won, key relationships, and competitive context</BulletItem>
+                  <BulletItem>Structured tagging system: win reason, loss reason, competitive intel, relationship, pricing, risk, delivery</BulletItem>
+                  <BulletItem>AI reads deal notes alongside quantitative data when generating insights, SWOT, and forecasts</BulletItem>
+                  <BulletItem>Shifts analysis from "what happened" to "why it happened" — e.g., "KSA growth driven by Civil Defense UL/FM mandates" instead of just "KSA grew 12%"</BulletItem>
+                  <BulletItem>Win/loss pattern recognition across markets, products, and competitors</BulletItem>
+                  <BulletItem>Timestamped notes with author tracking for full audit trail</BulletItem>
+                </CollapsibleSection>
               </div>
             </div>
 
