@@ -8,6 +8,100 @@ const FlowIcon = () => (
   </svg>
 );
 
+function renderInline(text) {
+  const parts = [];
+  let remaining = text;
+  let key = 0;
+  while (remaining.length > 0) {
+    const boldMatch = remaining.match(/\*\*(.*?)\*\*/);
+    if (boldMatch) {
+      const idx = boldMatch.index;
+      if (idx > 0) parts.push(<span key={key++}>{remaining.slice(0, idx)}</span>);
+      parts.push(<strong key={key++}>{boldMatch[1]}</strong>);
+      remaining = remaining.slice(idx + boldMatch[0].length);
+    } else {
+      parts.push(<span key={key++}>{remaining}</span>);
+      break;
+    }
+  }
+  return parts;
+}
+
+function parseTable(lines, startIdx) {
+  const rows = [];
+  let i = startIdx;
+  while (i < lines.length && lines[i].trim().startsWith("|") && lines[i].trim().endsWith("|")) {
+    const cells = lines[i].trim().split("|").filter(c => c.length > 0).map(c => c.trim());
+    if (!cells.every(c => /^[-:]+$/.test(c))) {
+      rows.push(cells);
+    }
+    i++;
+  }
+  return { rows, endIdx: i };
+}
+
+function RenderTable({ rows }) {
+  if (rows.length === 0) return null;
+  const header = rows[0];
+  const body = rows.slice(1);
+  return (
+    <table style={{ borderCollapse: "collapse", width: "100%", margin: "8px 0", fontSize: 12 }}>
+      <thead>
+        <tr>
+          {header.map((cell, i) => (
+            <th key={i} style={{ padding: "6px 10px", borderBottom: "2px solid #cbd5e1", textAlign: "left", fontWeight: 700, color: "#374151", background: "#f1f5f9" }}>
+              {renderInline(cell)}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {body.map((row, ri) => (
+          <tr key={ri}>
+            {row.map((cell, ci) => (
+              <td key={ci} style={{ padding: "5px 10px", borderBottom: "1px solid #e5e7eb", color: "#374151" }}>
+                {renderInline(cell)}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function RenderMarkdown({ text }) {
+  const lines = text.split("\n");
+  const elements = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    // Table detection
+    if (line.trim().startsWith("|") && line.trim().endsWith("|")) {
+      const { rows, endIdx } = parseTable(lines, i);
+      if (rows.length >= 2) {
+        elements.push(<RenderTable key={i} rows={rows} />);
+        i = endIdx;
+        continue;
+      }
+    }
+
+    if (!line.trim()) { elements.push(<br key={i} />); i++; continue; }
+    if (line.startsWith("### ")) { elements.push(<div key={i} style={{ fontSize: 13, fontWeight: 700, marginTop: 6, marginBottom: 2 }}>{renderInline(line.replace(/^#+\s/, ""))}</div>); i++; continue; }
+    if (line.startsWith("## ")) { elements.push(<div key={i} style={{ fontSize: 14, fontWeight: 700, marginTop: 8, marginBottom: 4 }}>{renderInline(line.replace(/^#+\s/, ""))}</div>); i++; continue; }
+    if (line.startsWith("# ")) { elements.push(<div key={i} style={{ fontSize: 15, fontWeight: 700, marginTop: i > 0 ? 10 : 0, marginBottom: 4 }}>{renderInline(line.replace(/^#+\s/, ""))}</div>); i++; continue; }
+    if (line.startsWith("- ") || line.startsWith("* ")) { elements.push(<div key={i} style={{ paddingLeft: 12, position: "relative" }}><span style={{ position: "absolute", left: 0 }}>&#8226;</span>{renderInline(line.replace(/^[-*]\s/, ""))}</div>); i++; continue; }
+    if (line.match(/^\d+\.\s/)) { elements.push(<div key={i} style={{ paddingLeft: 12 }}>{renderInline(line)}</div>); i++; continue; }
+
+    elements.push(<div key={i}>{renderInline(line)}</div>);
+    i++;
+  }
+
+  return <>{elements}</>;
+}
+
 function parseDataUpdate(text) {
   const match = text.match(/```data_update\s*\n([\s\S]*?)\n```/);
   if (!match) return null;
@@ -48,16 +142,7 @@ function MessageBubble({ msg, onApplyUpdate }) {
           borderRadius: "12px 12px 12px 2px",
           fontSize: 13, lineHeight: 1.8,
         }}>
-          {cleanText.split("\n").map((line, i) => {
-            if (!line.trim()) return <br key={i} />;
-            if (line.startsWith("# ")) return <div key={i} style={{ fontSize: 15, fontWeight: 700, marginTop: i > 0 ? 10 : 0, marginBottom: 4 }}>{line.replace(/^#+\s/, "")}</div>;
-            if (line.startsWith("## ")) return <div key={i} style={{ fontSize: 14, fontWeight: 700, marginTop: 8, marginBottom: 4 }}>{line.replace(/^#+\s/, "")}</div>;
-            if (line.startsWith("### ")) return <div key={i} style={{ fontSize: 13, fontWeight: 700, marginTop: 6, marginBottom: 2 }}>{line.replace(/^#+\s/, "")}</div>;
-            if (line.startsWith("- ") || line.startsWith("* ")) return <div key={i} style={{ paddingLeft: 12, position: "relative" }}><span style={{ position: "absolute", left: 0 }}>&#8226;</span>{line.replace(/^[-*]\s/, "")}</div>;
-            if (line.match(/^\d+\.\s/)) return <div key={i} style={{ paddingLeft: 12 }}>{line}</div>;
-            if (line.startsWith("**") && line.endsWith("**")) return <div key={i} style={{ fontWeight: 700 }}>{line.replace(/\*\*/g, "")}</div>;
-            return <div key={i}>{line.replace(/\*\*(.*?)\*\*/g, "$1")}</div>;
-          })}
+          <RenderMarkdown text={cleanText} />
         </div>
 
         {dataUpdate && !msg.applied && (
@@ -548,9 +633,9 @@ export function FlowPage({ dashboardData, onDataUpdate }) {
   };
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 0, height: "calc(100vh - 180px)", margin: "-24px -32px", background: "white" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 0, height: "calc(100vh - 140px)", margin: "-24px -32px", background: "white", overflow: "hidden" }}>
       {/* Main Chat Area */}
-      <div style={{ display: "flex", flexDirection: "column", borderRight: "1px solid #e5e7eb" }}
+      <div style={{ display: "flex", flexDirection: "column", borderRight: "1px solid #e5e7eb", minHeight: 0, overflow: "hidden" }}
         onDragOver={e => e.preventDefault()} onDrop={handleDrop}
       >
         {/* Chat header */}
@@ -713,7 +798,7 @@ export function FlowPage({ dashboardData, onDataUpdate }) {
       </div>
 
       {/* Right Sidebar */}
-      <div style={{ display: "flex", flexDirection: "column", background: "#fafbfc", overflowY: "auto" }}>
+      <div style={{ display: "flex", flexDirection: "column", background: "#fafbfc", overflowY: "auto", minHeight: 0 }}>
         {/* Quick Actions */}
         <div style={{ padding: "16px 20px", borderBottom: "1px solid #e5e7eb" }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: "#374151", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 12 }}>Quick Actions</div>
