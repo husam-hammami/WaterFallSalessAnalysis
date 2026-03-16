@@ -526,7 +526,7 @@ export default function WaterfallAISalesPlatform() {
       <div style={{ background: "#0f172a", color: "white", padding: "20px 32px 0" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <img src="/waterfall-logo.svg" alt="Waterfall Pumps" style={{ height: 36, width: "auto", filter: "brightness(0) invert(1)" }} />
+            <img src="/waterfall-logo.png" alt="Waterfall Pumps" style={{ height: 36, width: "auto" }} />
             <div style={{ borderLeft: "1px solid #334155", paddingLeft: 14 }}>
               <h1 style={{ fontSize: 16, fontWeight: 700, margin: 0, lineHeight: 1.2 }}>Sales Intelligence Platform</h1>
               <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>1,498 orders · 164 customers · 33 countries · 2020–2026</div>
