@@ -742,8 +742,110 @@ export default function WaterfallAISalesPlatform() {
         )}
 
         {/* ========== PRODUCTS TAB ========== */}
-        {activeTab === "products" && (
+        {activeTab === "products" && (() => {
+          const sortedByRevenue = [...productData].sort((a, b) => b.revenue - a.revenue);
+          const topProduct = sortedByRevenue[0];
+          const secondProduct = sortedByRevenue[1];
+          const totalProductRevenue = productData.reduce((s, p) => s + p.revenue, 0);
+          const topShare = ((topProduct.revenue / totalProductRevenue) * 100).toFixed(1);
+          const avgOrderValue = Math.round(topProduct.revenue / topProduct.orders);
+          const revenueGap = topProduct.revenue - secondProduct.revenue;
+
+          return (
           <div>
+            {/* Best Selling Product Hero Banner */}
+            <div style={{
+              background: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%)",
+              borderRadius: 14,
+              padding: "28px 32px",
+              marginBottom: 24,
+              position: "relative",
+              overflow: "hidden",
+            }}>
+              {/* Decorative glow */}
+              <div style={{
+                position: "absolute", top: -40, right: -40, width: 200, height: 200,
+                background: "radial-gradient(circle, rgba(37,99,235,0.25) 0%, transparent 70%)",
+                borderRadius: "50%",
+              }} />
+              <div style={{
+                position: "absolute", bottom: -30, left: "40%", width: 160, height: 160,
+                background: "radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%)",
+                borderRadius: "50%",
+              }} />
+
+              <div style={{ position: "relative", zIndex: 1 }}>
+                {/* Badge */}
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  background: "rgba(234,179,8,0.15)", border: "1px solid rgba(234,179,8,0.3)",
+                  borderRadius: 20, padding: "4px 14px", marginBottom: 16,
+                }}>
+                  <span style={{ fontSize: 16 }}>🏆</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: "#fbbf24", textTransform: "uppercase", letterSpacing: 1 }}>Best Selling Product</span>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 20 }}>
+                  {/* Left: Product name and key stat */}
+                  <div>
+                    <div style={{ fontSize: 28, fontWeight: 800, color: "white", marginBottom: 6 }}>{topProduct.name}</div>
+                    <div style={{ fontSize: 36, fontWeight: 800, color: "#60a5fa", marginBottom: 8 }}>AED {formatAED(topProduct.revenue)}</div>
+                    <div style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.6 }}>
+                      Generating <span style={{ color: "#fbbf24", fontWeight: 700 }}>{topShare}%</span> of total product revenue with{" "}
+                      <span style={{ color: "white", fontWeight: 600 }}>{topProduct.orders.toLocaleString()} orders</span>
+                    </div>
+                  </div>
+
+                  {/* Right: Key metrics */}
+                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                    <div style={{
+                      background: "rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 20px",
+                      border: "1px solid rgba(255,255,255,0.08)", minWidth: 130, textAlign: "center",
+                    }}>
+                      <div style={{ fontSize: 11, color: "#94a3b8", fontWeight: 600, marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>Avg Order Value</div>
+                      <div style={{ fontSize: 20, fontWeight: 800, color: "white" }}>AED {formatAED(avgOrderValue)}</div>
+                    </div>
+                    <div style={{
+                      background: "rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 20px",
+                      border: "1px solid rgba(255,255,255,0.08)", minWidth: 130, textAlign: "center",
+                    }}>
+                      <div style={{ fontSize: 11, color: "#94a3b8", fontWeight: 600, marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>Market Share</div>
+                      <div style={{ fontSize: 20, fontWeight: 800, color: "#fbbf24" }}>{topShare}%</div>
+                    </div>
+                    <div style={{
+                      background: "rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 20px",
+                      border: "1px solid rgba(255,255,255,0.08)", minWidth: 130, textAlign: "center",
+                    }}>
+                      <div style={{ fontSize: 11, color: "#94a3b8", fontWeight: 600, marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>Lead Over #{2}</div>
+                      <div style={{ fontSize: 20, fontWeight: 800, color: "#34d399" }}>+AED {formatAED(revenueGap)}</div>
+                      <div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>vs {secondProduct.name}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Revenue share bar */}
+                <div style={{ marginTop: 20 }}>
+                  <div style={{ display: "flex", gap: 2, height: 8, borderRadius: 4, overflow: "hidden" }}>
+                    {sortedByRevenue.map((p, i) => (
+                      <div key={i} style={{
+                        flex: p.revenue,
+                        background: i === 0 ? "#2563eb" : i === 1 ? "#7c3aed" : i === 2 ? "#0891b2" : "rgba(255,255,255,0.1)",
+                        transition: "flex 0.3s ease",
+                      }} />
+                    ))}
+                  </div>
+                  <div style={{ display: "flex", gap: 16, marginTop: 8, flexWrap: "wrap" }}>
+                    {sortedByRevenue.slice(0, 3).map((p, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <div style={{ width: 8, height: 8, borderRadius: 2, background: i === 0 ? "#2563eb" : i === 1 ? "#7c3aed" : "#0891b2" }} />
+                        <span style={{ fontSize: 11, color: "#94a3b8" }}>{p.name} ({((p.revenue / totalProductRevenue) * 100).toFixed(1)}%)</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 24 }}>
               <KPICard title="HSC Revenue" value="AED 103.2M" subtitle="564 orders · 59% of total" trend="Dominant product line" />
               <KPICard title="End Suction" value="AED 44.2M" subtitle="582 orders · 25% of total" trend="Highest order volume" />
@@ -800,7 +902,8 @@ export default function WaterfallAISalesPlatform() {
               </div>
             </div>
           </div>
-        )}
+          );
+        })()}
 
         {/* ========== CUSTOMERS TAB ========== */}
         {activeTab === "customers" && (
