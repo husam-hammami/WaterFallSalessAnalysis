@@ -381,6 +381,68 @@ const SWOTQuadrant = ({ title, items, borderColor, accentLight, expandedItems, o
   </div>
 );
 
+const CollapsibleSection = ({ icon, title, subtitle, children, accentColor = "#2563eb", defaultOpen = false }) => {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div style={{ background: "white", borderRadius: 10, border: "1px solid #e5e7eb", overflow: "hidden", transition: "box-shadow 0.2s", boxShadow: open ? "0 4px 16px rgba(0,0,0,0.07)" : "0 1px 2px rgba(0,0,0,0.04)" }}>
+      <div onClick={() => setOpen(!open)} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", cursor: "pointer", userSelect: "none", borderLeft: `3px solid ${accentColor}` }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, flex: 1 }}>
+          <div style={{ color: accentColor, display: "flex", alignItems: "center" }}>{icon}</div>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 650, color: "#111827", lineHeight: 1.3 }}>{title}</div>
+            {subtitle && <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>{subtitle}</div>}
+          </div>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 16 16" style={{ transition: "transform 0.2s", transform: open ? "rotate(180deg)" : "none", flexShrink: 0 }}>
+          <path d="M4 6l4 4 4-4" stroke="#6b7280" strokeWidth="2" fill="none" strokeLinecap="round" />
+        </svg>
+      </div>
+      {open && (
+        <div style={{ padding: "0 20px 18px 35px", borderTop: "1px solid #f3f4f6" }}>
+          <div style={{ paddingTop: 14 }}>{children}</div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const ScopeTable = ({ headers, rows, highlightLast = false }) => (
+  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+    <thead>
+      <tr>
+        {headers.map((h, i) => (
+          <th key={i} style={{ background: "#0f172a", color: "white", padding: "10px 14px", textAlign: "left", fontWeight: 600, fontSize: 12, letterSpacing: 0.3 }}>{h}</th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((row, rIdx) => {
+        const isLast = rIdx === rows.length - 1;
+        return (
+          <tr key={rIdx}>
+            {row.map((cell, cIdx) => (
+              <td key={cIdx} style={{
+                padding: "10px 14px",
+                borderBottom: "1px solid #f3f4f6",
+                fontWeight: highlightLast && isLast ? 700 : 400,
+                color: highlightLast && isLast ? "#0f172a" : "#374151",
+                background: highlightLast && isLast ? "#eff6ff" : rIdx % 2 === 1 ? "#f9fafb" : "white",
+              }}>{cell}</td>
+            ))}
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+);
+
+const BulletItem = ({ children }) => (
+  <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 8, fontSize: 13, color: "#374151", lineHeight: 1.6 }}>
+    <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#2563eb", flexShrink: 0, marginTop: 7 }} />
+    <div>{children}</div>
+  </div>
+);
+
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
   return (
@@ -443,6 +505,7 @@ export default function WaterfallAISalesPlatform() {
     { id: "market", label: "Market Intel" },
     { id: "swot", label: "SWOT" },
     { id: "flow", label: "Flow AI" },
+    { id: "scope", label: "Scope & Quotation" },
   ];
 
   const totalRevenue = useMemo(() => yearlyData.reduce((s, y) => s + y.revenue, 0), [yearlyData]);
@@ -1088,6 +1151,404 @@ export default function WaterfallAISalesPlatform() {
         {/* ========== FLOW AI TAB ========== */}
         {activeTab === "flow" && (
           <FlowPage dashboardData={dashboardData} onDataUpdate={handleDataUpdate} />
+        )}
+
+        {/* ========== SCOPE & QUOTATION TAB ========== */}
+        {activeTab === "scope" && (
+          <div>
+            {/* --- Header Banner --- */}
+            <div style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)", borderRadius: 12, padding: "32px 28px", marginBottom: 24, color: "white" }}>
+              <div style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 1.5, color: "#64748b", marginBottom: 8 }}>Commercial Proposal</div>
+              <div style={{ fontSize: 24, fontWeight: 800, lineHeight: 1.2, marginBottom: 6 }}>AI Sales Intelligence Platform</div>
+              <div style={{ fontSize: 14, color: "#94a3b8" }}>Prepared for Waterfall Pumps International</div>
+              <div style={{ display: "flex", gap: 16, marginTop: 16, flexWrap: "wrap" }}>
+                <span style={{ fontSize: 11, color: "#64748b", background: "rgba(255,255,255,0.08)", padding: "4px 10px", borderRadius: 4 }}>March 2026</span>
+                <span style={{ fontSize: 11, color: "#64748b", background: "rgba(255,255,255,0.08)", padding: "4px 10px", borderRadius: 4 }}>Valid 30 days</span>
+                <span style={{ fontSize: 11, color: "#64748b", background: "rgba(255,255,255,0.08)", padding: "4px 10px", borderRadius: 4 }}>v1.0</span>
+              </div>
+            </div>
+
+            {/* --- KPI Summary Cards --- */}
+            <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 28 }}>
+              <KPICard title="Platform Build" value="AED 30,000" subtitle="One-time investment" trend="Full scope delivery" />
+              <KPICard title="Monthly Support" value="AED 3,000" subtitle="All-inclusive, no hidden costs" trend="Unlimited AI usage" />
+              <KPICard title="Delivery Timeline" value="10 Weeks" subtitle="3 phased milestones" trend="Phase 1 live in 4 weeks" />
+            </div>
+
+            {/* --- Executive Summary --- */}
+            <div style={{ background: "white", borderRadius: 12, padding: "22px 24px", boxShadow: "0 1px 3px rgba(0,0,0,0.06)", border: "1px solid #e5e7eb", marginBottom: 28 }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#111827", marginBottom: 10, display: "flex", alignItems: "center", gap: 8 }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                Executive Summary
+              </div>
+              <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.7 }}>
+                Waterfall Pumps operates across 33 countries, 164 customers, and 1,498+ orders spanning 2020–2026. This platform replaces scattered Excel files with a unified AI-powered command center — delivering interactive dashboards, strategic analysis, and automated executive reporting across every active market.
+              </div>
+            </div>
+
+            {/* --- Platform Capabilities --- */}
+            <div style={{ marginBottom: 28 }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#111827", marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                Platform Capabilities
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <CollapsibleSection
+                  icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>}
+                  title="Global Sales Dashboard"
+                  subtitle="Executive KPIs, revenue trends, and market distribution"
+                  accentColor="#2563eb"
+                >
+                  <BulletItem>Total revenue, order volume, average order value, year-over-year growth, CAGR</BulletItem>
+                  <BulletItem>Revenue trend analysis (2020–2026+) with visual forecasting</BulletItem>
+                  <BulletItem>Global market distribution overview across all active countries</BulletItem>
+                  <BulletItem>Real-time trend indicators with directional signals</BulletItem>
+                </CollapsibleSection>
+
+                <CollapsibleSection
+                  icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>}
+                  title="Multi-Market Analysis"
+                  subtitle="Deep dive for each active market with dedicated modules"
+                  accentColor="#7c3aed"
+                >
+                  <BulletItem>Markets covered: UAE, Saudi Arabia, Colombia, Oman, Turkey, Malaysia, Thailand, Indonesia, Pakistan, Palestine, and others</BulletItem>
+                  <BulletItem>Per-market revenue and order trends over time</BulletItem>
+                  <BulletItem>Top customer rankings and distributor performance tracking</BulletItem>
+                  <BulletItem>Active project pipeline with values and sectors</BulletItem>
+                  <BulletItem>Market-specific SWOT analysis with evidence-based scoring</BulletItem>
+                  <BulletItem>Cross-market benchmarking and comparison views</BulletItem>
+                </CollapsibleSection>
+
+                <CollapsibleSection
+                  icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>}
+                  title="Product & Customer Analytics"
+                  subtitle="Revenue by product line, customer risk scoring, distributor scorecards"
+                  accentColor="#0891b2"
+                >
+                  <BulletItem>Revenue breakdown by product line: Horizontal Split Case, End Suction, Vertical Turbine, Accessories, Service</BulletItem>
+                  <BulletItem>Capacity range analysis by GPM brackets with average pricing</BulletItem>
+                  <BulletItem>Customer concentration risk analysis with alert thresholds</BulletItem>
+                  <BulletItem>Distributor performance scorecards and revenue dependency mapping</BulletItem>
+                </CollapsibleSection>
+
+                <CollapsibleSection
+                  icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>}
+                  title="AI Strategic Insights Engine"
+                  subtitle="8 intelligence categories with priority scoring and recommended actions"
+                  accentColor="#d97706"
+                >
+                  <BulletItem>Revenue Alerts — concentration risks and stagnation warnings</BulletItem>
+                  <BulletItem>Growth Opportunities — underperforming markets and untapped segments</BulletItem>
+                  <BulletItem>Product Strategy — product line gaps and cross-sell potential</BulletItem>
+                  <BulletItem>Market Intelligence — competitive positioning and market sizing</BulletItem>
+                  <BulletItem>Pricing Intelligence — AOV trends and margin analysis</BulletItem>
+                  <BulletItem>Mega Projects — pipeline tracking and win probability</BulletItem>
+                  <BulletItem>Operational — invoicing gaps and delivery bottlenecks</BulletItem>
+                  <BulletItem>Competitive — certification advantages and market share defense</BulletItem>
+                  <div style={{ marginTop: 8, fontSize: 12, color: "#6b7280", fontStyle: "italic" }}>Each insight includes priority level, evidence, recommended action, and projected business impact.</div>
+                </CollapsibleSection>
+
+                <CollapsibleSection
+                  icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>}
+                  title="Flow AI — Conversational Sales Analyst"
+                  subtitle="Ask anything about your sales data in plain English"
+                  accentColor="#059669"
+                >
+                  <BulletItem>Natural language queries: "Why did Turkey orders drop in 2024?" or "Compare KSA vs UAE this quarter"</BulletItem>
+                  <BulletItem>Data-backed answers with specific figures and evidence</BulletItem>
+                  <BulletItem>Scenario modeling: "What if we onboard a third KSA distributor at AED 10M?"</BulletItem>
+                  <BulletItem>AI can update dashboard visualizations live based on new data or hypothetical scenarios</BulletItem>
+                </CollapsibleSection>
+
+                <CollapsibleSection
+                  icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>}
+                  title="Data Management & Security"
+                  subtitle="Excel/CSV upload, 20 user accounts, encrypted storage"
+                  accentColor="#dc2626"
+                >
+                  <BulletItem>Excel/CSV upload with intelligent parsing and automatic categorization</BulletItem>
+                  <BulletItem>Historical data import (2020–present) with validation and error detection</BulletItem>
+                  <BulletItem>Secure login for up to 20 named users with role-based access:</BulletItem>
+                  <div style={{ marginLeft: 14, marginBottom: 8 }}>
+                    <div style={{ fontSize: 12, color: "#374151", lineHeight: 1.8 }}>
+                      <strong>Admin</strong> — full access, user management, data uploads<br/>
+                      <strong>Manager</strong> — full dashboard access, report generation<br/>
+                      <strong>Analyst</strong> — dashboard access, Flow AI queries<br/>
+                      <strong>Viewer</strong> — read-only dashboard access
+                    </div>
+                  </div>
+                  <BulletItem>Session management, activity logging, and encrypted data storage</BulletItem>
+                </CollapsibleSection>
+
+                <CollapsibleSection
+                  icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>}
+                  title="Automated Executive Reporting"
+                  subtitle="Scheduled email reports with AI narrative summaries and PDF export"
+                  accentColor="#8b5cf6"
+                >
+                  <BulletItem>Scheduled reports delivered via email (weekly and/or monthly)</BulletItem>
+                  <BulletItem>PDF export of any dashboard view, chart, or analysis</BulletItem>
+                  <BulletItem>AI-generated narrative summaries highlighting key changes, risks, and opportunities</BulletItem>
+                  <BulletItem>Custom report configuration: select markets, date ranges, and metrics</BulletItem>
+                </CollapsibleSection>
+
+                <CollapsibleSection
+                  icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>}
+                  title="SWOT & Strategic Planning"
+                  subtitle="Dynamic SWOT matrix generated from actual sales data"
+                  accentColor="#ec4899"
+                >
+                  <BulletItem>Dynamic SWOT matrix generated from actual sales data — not manual input</BulletItem>
+                  <BulletItem>Global SWOT and per-market SWOT views</BulletItem>
+                  <BulletItem>Each item backed by evidence with confidence scoring</BulletItem>
+                  <BulletItem>Linked strategic recommendations with projected impact values</BulletItem>
+                </CollapsibleSection>
+              </div>
+            </div>
+
+            {/* --- What's Not Included --- */}
+            <div style={{ background: "white", borderRadius: 12, padding: "22px 24px", boxShadow: "0 1px 3px rgba(0,0,0,0.06)", border: "1px solid #e5e7eb", marginBottom: 28 }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#111827", marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                Not Included in Phase 1
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {["Mobile application (web-responsive only)", "ERP/CRM integration (future phase)", "Inventory / supply chain management", "Multi-language interface"].map((item, i) => (
+                  <span key={i} style={{ fontSize: 12, padding: "6px 12px", borderRadius: 6, background: "#f8fafc", border: "1px solid #e5e7eb", color: "#6b7280" }}>{item}</span>
+                ))}
+              </div>
+              <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 10, fontStyle: "italic" }}>Any of the above can be added as a future phase.</div>
+            </div>
+
+            {/* --- Delivery Timeline --- */}
+            <div style={{ marginBottom: 28 }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#111827", marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Delivery Timeline
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <CollapsibleSection
+                  icon={<span style={{ fontWeight: 800, fontSize: 14 }}>1</span>}
+                  title="Phase 1 — Foundation"
+                  subtitle="Weeks 1–4"
+                  accentColor="#2563eb"
+                  defaultOpen={true}
+                >
+                  <BulletItem>Core platform infrastructure and deployment</BulletItem>
+                  <BulletItem>Global overview dashboard with all KPIs</BulletItem>
+                  <BulletItem>Secure authentication and user role management</BulletItem>
+                  <BulletItem>Data upload and import engine</BulletItem>
+                  <BulletItem>First 3 market deep dives: UAE, Saudi Arabia, Colombia</BulletItem>
+                  <BulletItem>Product and capacity analytics modules</BulletItem>
+                  <div style={{ marginTop: 10, padding: "8px 12px", background: "#eff6ff", borderRadius: 6, fontSize: 12, fontWeight: 600, color: "#2563eb" }}>Milestone: Platform live with core markets accessible to the team</div>
+                </CollapsibleSection>
+
+                <CollapsibleSection
+                  icon={<span style={{ fontWeight: 800, fontSize: 14 }}>2</span>}
+                  title="Phase 2 — Intelligence"
+                  subtitle="Weeks 5–7"
+                  accentColor="#7c3aed"
+                >
+                  <BulletItem>Remaining market deep dives (Oman, Turkey, Malaysia, Thailand, Indonesia, Pakistan, Palestine)</BulletItem>
+                  <BulletItem>Flow AI conversational analyst</BulletItem>
+                  <BulletItem>AI Strategic Insights Engine (all 8 categories)</BulletItem>
+                  <BulletItem>Customer intelligence and distributor scorecards</BulletItem>
+                  <BulletItem>SWOT analysis module (global + per-market)</BulletItem>
+                  <div style={{ marginTop: 10, padding: "8px 12px", background: "#f5f3ff", borderRadius: 6, fontSize: 12, fontWeight: 600, color: "#7c3aed" }}>Milestone: Full multi-market intelligence operational. AI features live.</div>
+                </CollapsibleSection>
+
+                <CollapsibleSection
+                  icon={<span style={{ fontWeight: 800, fontSize: 14 }}>3</span>}
+                  title="Phase 3 — Reporting & Polish"
+                  subtitle="Weeks 8–10"
+                  accentColor="#059669"
+                >
+                  <BulletItem>Automated executive email reports (weekly/monthly)</BulletItem>
+                  <BulletItem>PDF export across all views</BulletItem>
+                  <BulletItem>AI narrative report generation</BulletItem>
+                  <BulletItem>Cross-market comparison and benchmarking views</BulletItem>
+                  <BulletItem>Scenario modeling in Flow AI</BulletItem>
+                  <BulletItem>User acceptance testing and refinements</BulletItem>
+                  <div style={{ marginTop: 10, padding: "8px 12px", background: "#ecfdf5", borderRadius: 6, fontSize: 12, fontWeight: 600, color: "#059669" }}>Milestone: Full platform delivery. Team onboarded.</div>
+                </CollapsibleSection>
+              </div>
+            </div>
+
+            {/* --- Build Cost --- */}
+            <div style={{ background: "white", borderRadius: 12, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.06)", border: "1px solid #e5e7eb", marginBottom: 16 }}>
+              <div style={{ padding: "18px 24px 14px", borderBottom: "1px solid #f3f4f6" }}>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "#111827", display: "flex", alignItems: "center", gap: 8 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  Platform Build Investment
+                </div>
+              </div>
+              <ScopeTable
+                headers={["Phase", "Deliverables", "Investment (AED)"]}
+                rows={[
+                  ["Phase 1 — Foundation", "Core platform, dashboard, auth, data engine, 3 markets", "12,000"],
+                  ["Phase 2 — Intelligence", "Remaining markets, AI insights, Flow AI, SWOT, customer intel", "11,000"],
+                  ["Phase 3 — Reporting", "Automated reports, PDF export, scenario modeling, polish", "7,000"],
+                  ["Total Build", "", "30,000"],
+                ]}
+                highlightLast={true}
+              />
+            </div>
+
+            {/* --- Payment Schedule --- */}
+            <div style={{ background: "white", borderRadius: 12, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.06)", border: "1px solid #e5e7eb", marginBottom: 28 }}>
+              <div style={{ padding: "18px 24px 14px", borderBottom: "1px solid #f3f4f6" }}>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "#111827", display: "flex", alignItems: "center", gap: 8 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                  Payment Schedule
+                </div>
+              </div>
+              <ScopeTable
+                headers={["Milestone", "Amount (AED)", "When"]}
+                rows={[
+                  ["Project kickoff", "9,000 (30%)", "Upon signing"],
+                  ["Phase 1 delivery", "9,000 (30%)", "End of Week 4"],
+                  ["Phase 2 delivery", "6,000 (20%)", "End of Week 7"],
+                  ["Final delivery & acceptance", "6,000 (20%)", "End of Week 10"],
+                ]}
+              />
+            </div>
+
+            {/* --- Monthly Support --- */}
+            <div style={{ background: "white", borderRadius: 12, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.06)", border: "1px solid #e5e7eb", marginBottom: 16 }}>
+              <div style={{ padding: "18px 24px 14px", borderBottom: "1px solid #f3f4f6" }}>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "#111827", display: "flex", alignItems: "center", gap: 8 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                  Ongoing Platform Support — AED 3,000/month
+                </div>
+                <div style={{ fontSize: 12, color: "#6b7280", marginTop: 4 }}>All-inclusive. No hidden charges or surprise invoices.</div>
+              </div>
+              <ScopeTable
+                headers={["What's Covered", "Details"]}
+                rows={[
+                  ["Cloud hosting & infrastructure", "Dedicated server, SSL, CDN, 99.9% uptime target"],
+                  ["Database management", "Secure cloud database, daily automated backups, data retention"],
+                  ["AI engine costs", "All AI processing for chat, insights, and reports"],
+                  ["Domain & DNS", "Custom domain (e.g., sales.waterfallpumps.com) fully managed"],
+                  ["Data uploads", "Unlimited self-service uploads; up to 2 assisted imports if needed"],
+                  ["AI usage", "Unlimited queries across Flow AI, insights, and reports"],
+                  ["Bug fixes & patches", "Ongoing maintenance, security patches, browser compatibility"],
+                  ["Support", "Priority support with 48-hour response time"],
+                  ["Monthly fee (all-inclusive)", "3,000 AED/month"],
+                ]}
+                highlightLast={true}
+              />
+              <div style={{ padding: "12px 24px", fontSize: 12, color: "#6b7280", fontStyle: "italic", borderTop: "1px solid #f3f4f6" }}>Minimum 6-month commitment. Reviewed annually.</div>
+            </div>
+
+            {/* --- Total Investment Summary --- */}
+            <div style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)", borderRadius: 12, padding: "24px", marginBottom: 28, color: "white" }}>
+              <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 16 }}>Total Investment Summary</div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16 }}>
+                {[
+                  { label: "Platform Build", value: "AED 30,000", sub: "One-time" },
+                  { label: "6 Months Support", value: "AED 18,000", sub: "From go-live" },
+                  { label: "Year 1 Total", value: "AED 66,000", sub: "Build + support" },
+                  { label: "Year 2+", value: "AED 36,000", sub: "Annual retainer" },
+                ].map((item, i) => (
+                  <div key={i} style={{ background: "rgba(255,255,255,0.06)", borderRadius: 8, padding: "14px 16px", border: "1px solid rgba(255,255,255,0.1)" }}>
+                    <div style={{ fontSize: 11, color: "#94a3b8", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 4 }}>{item.label}</div>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: i === 2 ? "#38bdf8" : "white" }}>{item.value}</div>
+                    <div style={{ fontSize: 11, color: "#64748b", marginTop: 2 }}>{item.sub}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* --- Future Roadmap --- */}
+            <div style={{ marginBottom: 28 }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#111827", marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                Future Roadmap
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <CollapsibleSection
+                  icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>}
+                  title="Mobile App — Complimentary"
+                  subtitle="Provided at no additional build cost for active support clients"
+                  accentColor="#059669"
+                >
+                  <BulletItem>Native mobile app for iOS and Android</BulletItem>
+                  <BulletItem>Executive dashboard with key KPIs at a glance</BulletItem>
+                  <BulletItem>Push notifications for critical AI alerts (revenue drops, risk triggers)</BulletItem>
+                  <BulletItem>Flow AI chat accessible on the go</BulletItem>
+                  <div style={{ marginTop: 8, fontSize: 12, color: "#6b7280", fontStyle: "italic" }}>Estimated availability: 4–6 weeks after Phase 3 completion, while support retainer is active.</div>
+                </CollapsibleSection>
+
+                <CollapsibleSection
+                  icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>}
+                  title="ERP/CRM Integration"
+                  subtitle="Direct API connection for automated data sync"
+                  accentColor="#d97706"
+                >
+                  <BulletItem>Direct API connection to existing ERP or accounting systems</BulletItem>
+                  <BulletItem>Automated data sync — no more manual uploads</BulletItem>
+                  <BulletItem>Real-time revenue tracking as orders close</BulletItem>
+                  <div style={{ marginTop: 8, fontSize: 12, color: "#6b7280", fontStyle: "italic" }}>Investment to be scoped based on ERP system.</div>
+                </CollapsibleSection>
+
+                <CollapsibleSection
+                  icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"/><circle cx="12" cy="12" r="4"/></svg>}
+                  title="Advanced Intelligence"
+                  subtitle="Predictive forecasting, competitor tracking, multi-language"
+                  accentColor="#dc2626"
+                >
+                  <BulletItem>Predictive revenue forecasting using historical patterns</BulletItem>
+                  <BulletItem>Win/loss probability scoring on active opportunities</BulletItem>
+                  <BulletItem>Automated competitor tracking per market</BulletItem>
+                  <BulletItem>Multi-language dashboard support (Arabic, Spanish, Turkish)</BulletItem>
+                  <div style={{ marginTop: 8, fontSize: 12, color: "#6b7280", fontStyle: "italic" }}>Investment to be scoped based on requirements.</div>
+                </CollapsibleSection>
+              </div>
+            </div>
+
+            {/* --- Before vs After --- */}
+            <div style={{ background: "white", borderRadius: 12, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.06)", border: "1px solid #e5e7eb", marginBottom: 28 }}>
+              <div style={{ padding: "18px 24px 14px", borderBottom: "1px solid #f3f4f6" }}>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "#111827" }}>What Changes</div>
+              </div>
+              <ScopeTable
+                headers={["Today", "With the Platform"]}
+                rows={[
+                  ["Sales data in scattered Excel files", "Unified command center for all 33 countries"],
+                  ["Manual analysis takes days", "AI-generated insights in seconds"],
+                  ["Strategic decisions based on gut feel", "Data-backed SWOT with evidence scoring"],
+                  ["No visibility into distributor risk", "Concentration alerts and dependency mapping"],
+                  ["Reports created manually", "Automated executive reports on schedule"],
+                  ["Only leadership has the picture", "20 team members with role-appropriate access"],
+                  ["Static snapshots", "Live, interactive, always current"],
+                ]}
+              />
+            </div>
+
+            {/* --- Next Steps --- */}
+            <div style={{ background: "white", borderRadius: 12, padding: "22px 24px", boxShadow: "0 1px 3px rgba(0,0,0,0.06)", border: "1px solid #e5e7eb", marginBottom: 16 }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#111827", marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Next Steps
+              </div>
+              {[
+                "Review this proposal and confirm scope alignment",
+                "Sign-off and payment of the 30% kickoff amount (AED 9,000)",
+                "Provide initial sales data files within 5 business days",
+                "Project kickoff and Phase 1 begins immediately",
+              ].map((step, i) => (
+                <div key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 12 }}>
+                  <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#eff6ff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 12, fontWeight: 700, color: "#2563eb" }}>{i + 1}</div>
+                  <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.6, paddingTop: 2 }}>{step}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* --- Footer note --- */}
+            <div style={{ textAlign: "center", fontSize: 12, color: "#9ca3af", padding: "16px 0", fontStyle: "italic" }}>
+              This proposal is valid for 30 days from the date of issue.
+            </div>
+          </div>
         )}
       </div>
 
