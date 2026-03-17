@@ -506,8 +506,33 @@ async function readFileContent(file) {
   return { type: "unsupported", name: file.name, ext };
 }
 
+const CHAT_HISTORY_KEY = "flowai_chat_history";
+
+function loadChatHistory() {
+  try {
+    const raw = localStorage.getItem(CHAT_HISTORY_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function saveChatHistory(messages) {
+  try {
+    localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(messages));
+  } catch {
+    // localStorage full or unavailable — silently ignore
+  }
+}
+
 export function FlowPage({ dashboardData, onDataUpdate }) {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => {
+    const saved = loadChatHistory();
+    return saved || [];
+  });
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -516,6 +541,14 @@ export function FlowPage({ dashboardData, onDataUpdate }) {
   const inputRef = useRef(null);
   const fileInputRef = useRef(null);
   const msgIdRef = useRef(0);
+
+  // Initialize msgIdRef from saved history
+  useEffect(() => {
+    const saved = loadChatHistory();
+    if (saved && saved.length > 0) {
+      msgIdRef.current = Math.max(...saved.map(m => m.id));
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -586,15 +619,23 @@ export function FlowPage({ dashboardData, onDataUpdate }) {
       const data = await res.json();
       const assistantText = data.content?.[0]?.text || data.error || "No response";
 
-      setMessages(prev => [...prev, {
+      const assistantMsg = {
         id: ++msgIdRef.current,
         role: "assistant",
         content: assistantText,
         display: assistantText,
         applied: false,
-      }]);
+      };
+
+      setMessages(prev => {
+        const updated = [...prev, assistantMsg];
+        saveChatHistory(updated);
+        return updated;
+      });
     } catch (err) {
       setError(err.message);
+      // Save user message even if assistant response fails
+      saveChatHistory([...messages, userMsg]);
     } finally {
       setLoading(false);
     }
@@ -602,7 +643,18 @@ export function FlowPage({ dashboardData, onDataUpdate }) {
 
   const handleApplyUpdate = (msgId, dataUpdate) => {
     onDataUpdate(dataUpdate);
-    setMessages(prev => prev.map(m => m.id === msgId ? { ...m, applied: true } : m));
+    setMessages(prev => {
+      const updated = prev.map(m => m.id === msgId ? { ...m, applied: true } : m);
+      saveChatHistory(updated);
+      return updated;
+    });
+  };
+
+  const handleClearHistory = () => {
+    setMessages([]);
+    setError(null);
+    msgIdRef.current = 0;
+    try { localStorage.removeItem(CHAT_HISTORY_KEY); } catch {}
   };
 
   const handleKeyDown = (e) => {
@@ -654,9 +706,31 @@ export function FlowPage({ dashboardData, onDataUpdate }) {
             <div style={{ fontSize: 15, fontWeight: 700, color: "#111827" }}>Flow AI</div>
             <div style={{ fontSize: 11, color: "#6b7280" }}>Sales Intelligence Analyst — upload data, ask questions, update your dashboard</div>
           </div>
-          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 5 }}>
-            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e" }} />
-            <span style={{ fontSize: 11, color: "#6b7280" }}>Ready</span>
+          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 12 }}>
+            {messages.length > 0 && (
+              <button
+                onClick={handleClearHistory}
+                style={{
+                  padding: "5px 10px", borderRadius: 6,
+                  background: "transparent", border: "1px solid #e5e7eb",
+                  fontSize: 11, color: "#6b7280", cursor: "pointer",
+                  display: "flex", alignItems: "center", gap: 4,
+                  transition: "all 0.15s",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = "#fee2e2"; e.currentTarget.style.color = "#dc2626"; e.currentTarget.style.borderColor = "#fecaca"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#6b7280"; e.currentTarget.style.borderColor = "#e5e7eb"; }}
+                title="Clear chat history"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                </svg>
+                Clear History
+              </button>
+            )}
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e" }} />
+              <span style={{ fontSize: 11, color: "#6b7280" }}>Ready</span>
+            </div>
           </div>
         </div>
 
