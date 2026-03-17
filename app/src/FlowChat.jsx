@@ -650,13 +650,6 @@ export function FlowPage({ dashboardData, onDataUpdate }) {
     });
   };
 
-  const handleClearHistory = () => {
-    setMessages([]);
-    setError(null);
-    msgIdRef.current = 0;
-    try { localStorage.removeItem(CHAT_HISTORY_KEY); } catch {}
-  };
-
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -706,31 +699,9 @@ export function FlowPage({ dashboardData, onDataUpdate }) {
             <div style={{ fontSize: 15, fontWeight: 700, color: "#111827" }}>Flow AI</div>
             <div style={{ fontSize: 11, color: "#6b7280" }}>Sales Intelligence Analyst — upload data, ask questions, update your dashboard</div>
           </div>
-          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 12 }}>
-            {messages.length > 0 && (
-              <button
-                onClick={handleClearHistory}
-                style={{
-                  padding: "5px 10px", borderRadius: 6,
-                  background: "transparent", border: "1px solid #e5e7eb",
-                  fontSize: 11, color: "#6b7280", cursor: "pointer",
-                  display: "flex", alignItems: "center", gap: 4,
-                  transition: "all 0.15s",
-                }}
-                onMouseEnter={e => { e.currentTarget.style.background = "#fee2e2"; e.currentTarget.style.color = "#dc2626"; e.currentTarget.style.borderColor = "#fecaca"; }}
-                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#6b7280"; e.currentTarget.style.borderColor = "#e5e7eb"; }}
-                title="Clear chat history"
-              >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                </svg>
-                Clear History
-              </button>
-            )}
-            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e" }} />
-              <span style={{ fontSize: 11, color: "#6b7280" }}>Ready</span>
-            </div>
+          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 5 }}>
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e" }} />
+            <span style={{ fontSize: 11, color: "#6b7280" }}>Ready</span>
           </div>
         </div>
 
